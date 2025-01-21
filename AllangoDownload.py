@@ -35,7 +35,8 @@ for page in r["pages"]:
         # Get all BaseURLS and Download Content
         mpdUrls = tree.findall("./*/*/*/{urn:mpeg:dash:schema:mpd:2011}BaseURL")
         for murl in mpdUrls:
-            dashStreamUrl = f"{f"https://www.allango.net/{url}".rpartition('/')[0]}/{murl.text}"
+            partialURL = f"https://www.allango.net/{url}".rpartition('/')[0]
+            dashStreamUrl = f"{partialURL}/{murl.text}"
             
             # Download and write content to "./stream.tmp"
             streamDataRequest = session.get(dashStreamUrl)
@@ -43,8 +44,8 @@ for page in r["pages"]:
                 f.write(streamDataRequest.content)
 
             # Convert to MP3 file with FFMPEG
-            print(f"Converting \"{audio["originalFilename"]}\"")
-            subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", "./stream.tmp", "-c:v", "copy", "-c:a", "libmp3lame", "-q:a", "4", f"./{isbn}/{audio["originalFilename"]}"]) 
+            print(f"Converting \"{audio['originalFilename']}\"")
+            subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", "./stream.tmp", "-c:v", "copy", "-c:a", "libmp3lame", "-q:a", "4", f"./{isbn}/{audio['originalFilename']}"]) 
 
 # Remove temporary file
 os.remove("./stream.tmp")                  
